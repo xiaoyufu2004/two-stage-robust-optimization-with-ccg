@@ -229,11 +229,8 @@ while (UB - LB > eps and iter_cnt <= max_iter):
         for j in range(customer_num):
             x_master[iter_cnt, i, j] = master.addVar(
                 lb=0, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, 
-                name='x_%s_%s_%s' % (iter_cnt, i, j))
+                name='x_%s_%s_%s' % (iter_cnt, i, j)) # 是mp的辅助变量，用于构造每次迭代对eta加的约束
 
-    # Get the worst-case demand from subproblem
-    d_worst = [d[j].x for j in range(customer_num)]
-    
     # If subproblem is feasible and bounded
     if subProblem.status == GRB.OPTIMAL:
         # Create new optimality cut: eta >= sum c_ij x_ij^l
@@ -250,13 +247,20 @@ while (UB - LB > eps and iter_cnt <= max_iter):
             for j in range(customer_num):
                 expr.addTerms(1, x_master[iter_cnt, i, j])
             master.addConstr(expr <= z[i], name='cap_scen_%s_%s' % (iter_cnt, i))
+            """
+            关于这个约束有个问题，RHS应该用z还是z_sol（即上一阶段的z）？
+            GPT的代码用的是z，得到与知乎相同的结果，其他版本代码也用的是z
+            理解：z_sol是mp求解完得到的z，储存在z_sol，传递给子问题约束中使用，子问题用参数z_sol与变量d。
+            d_sol是sp求解完得到的不确定量d，储存在d_sol，传递给主问题约束中使用，主问题用参数d_sol与变量z。
+            相当于将d_sol情况下的约束加到主问题，对该情况下的x_master与eta作限制
+            """
         
         # Demand constraints for this scenario
         for j in range(customer_num):
             expr = LinExpr()
             for i in range(facility_num):
                 expr.addTerms(1, x_master[iter_cnt, i, j])
-            master.addConstr(expr >= d_worst[j], name='dem_scen_%s_%s' % (iter_cnt, j))
+            master.addConstr(expr >= d_sol[j], name='dem_scen_%s_%s' % (iter_cnt, j))
 
         # Solve the master problem
         master.optimize()
@@ -266,7 +270,10 @@ while (UB - LB > eps and iter_cnt <= max_iter):
         LB = master.ObjVal
         print('LB: {:.2f}'.format(LB), end='\t | ')
         
-        """ Update the subproblem """
+        """ Update the subproblem
+         因为z_sol更新了，所以sp对应的约束也要更新，旧的关于z_sol的约束删除，换成新的z_sol约束
+         mp则不同，sp每次迭代得到的d_sol都会构成一个新的约束加到mp中，而旧的约束不会删除
+         """
         # Update z_sol from master solution
         for key in z.keys():
             z_sol[key] = z[key].x
@@ -310,40 +317,8 @@ while (UB - LB > eps and iter_cnt <= max_iter):
             expr = LinExpr()
             for i in range(facility_num):
                 expr.addTerms(1, x_master[iter_cnt, i, j])
-            master.addConstr(expr >= d_worst[j], name='feas_cut_%s_%s' % (iter_cnt, j))
+            master.addConstr(expr >= d_sol[j], name='feas_cut_%s_%s' % (iter_cnt, j))
         
-        master.optimize()
-        print('Obj(master): {:.2f}'.format(master.ObjVal))
-        LB = master.ObjVal
-        print('LB: {:.2f}'.format(LB))
-        
-        # Update subproblem with new z
-        for key in z.keys():
-            z_sol[key] = z[key].x
-        
-        for i in range(facility_num):
-            constr_name = 'sub_capacity_%s' % i
-            constr = subProblem.getConstrByName(constr_name)
-            if constr:
-                subProblem.remove(constr)
-            
-            expr = LinExpr()
-            for j in range(customer_num):
-                expr.addTerms(1, x[i, j])
-            subProblem.addConstr(expr <= z_sol[i], name=constr_name)
-        
-        subProblem.optimize()
-        d_sol = print_sub_sol(subProblem, d, g, x)
-        
-        if subProblem.status == GRB.OPTIMAL:
-            total_cost = sum(fixed_cost[i] * y[i].x for i in range(facility_num))
-            total_cost += sum(unit_capacity_cost[i] * z[i].x for i in range(facility_num))
-            total_cost += subProblem.ObjVal
-            UB = min(UB, total_cost)
-        
-        print('UB: {:.2f}'.format(UB))
-        Gap = 100 * (UB - LB) / UB if UB != 0 else 100
-        print('Gap: {:.2f}%'.format(Gap))
 
 # Final output
 master.write('finalMP.lp')
