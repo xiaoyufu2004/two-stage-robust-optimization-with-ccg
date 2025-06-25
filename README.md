@@ -1,6 +1,7 @@
 # **鲁棒优化笔记：静态鲁棒与两阶段鲁棒优化**
-> **参考**  
-> 公众号文章《C&CG算法求解 Two-stage RO 的完整推导与代码》。
+> **参考**
+> Zeng B., Zhao L. (2013) *Solving two-stage robust optimization problems using a column-and-constraint generation method*, **ORL** 41 (5) .  
+> 公众号文章《鲁棒优化| C&CG算法求解两阶段鲁棒优化：全网最完整、最详细的【入门-完整推导-代码实现】笔记》
 
 ## 1. 静态鲁棒优化
 
