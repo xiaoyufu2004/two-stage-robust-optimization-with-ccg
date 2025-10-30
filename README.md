@@ -297,6 +297,4 @@ $$D = \{d : d_j = \bar{d_j} + \xi_j g_j, \quad \sum g_j \le \Gamma, \dots \}$$
 - **主问题**：求解第一阶段变量 $y, z$ 和第二阶段成本的近似值 $\eta$ 。每次迭代，会根据子问题找到的最坏需求场景 $d^k$ 和对应的运输变量 $x^k$ ，添加新的列和约束。
 - **子问题**：对于给定的 $y, z$ ，找到最坏的需求 $d \in D$ ，使得第二阶段的运输成本最小化的值达到最大。
 
-    $$
-    \max_{d \in D} \min_{x \ge 0} \{\sum_{i,j} t_{ij} x_{ij} \mid \sum_{j} x_{ij} \le z_i, \sum_{i} x_{ij} \ge d_j \}
-    $$
+$$\max_{d \in D} \min_{x \ge 0} \{\sum_{i,j} t_{ij} x_{ij} \mid \sum_{j} x_{ij} \le z_i, \sum_{i} x_{ij} \ge d_j \}$$
