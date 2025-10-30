@@ -21,8 +21,8 @@ $$\text{s.t. } Ax \geq b - Bu, \quad x \geq 0$$
 #### 步骤2：引入拉格朗日乘子，构造拉格朗日函数
 $$L(x,y,w) = c^T x - y^T (Ax - (b - Bu)) - w^T x$$
 其中：
-- $y \geq 0$：约束$Ax \geq b - Bu$的乘子
-- $w \geq 0$：约束$x \geq 0$的乘子
+- $y \geq 0$ ：约束 $Ax \geq b - Bu$ 的乘子
+- $w \geq 0$ ：约束 $x \geq 0$ 的乘子
 
 #### 步骤3：列出KKT条件及原问题约束
 1. **原始可行**：
@@ -34,17 +34,21 @@ $$L(x,y,w) = c^T x - y^T (Ax - (b - Bu)) - w^T x$$
    也可以从对偶问题的角度理解该条件，对偶问题：
    $$\max (b-Bu)y$$
    $$\text{s.t. }A^T y \leq c, \quad y \geq 0$$
-   对于对偶问题的不等式$A^T y \leq c$，引入松弛变量$w \geq 0$化为等式$A^T y + w \leq c$，与拉格朗日函数对$x$梯度为0的条件等价。
+   对于对偶问题的不等式 $A^T y \leq c$ ，引入松弛变量 $w \geq 0$ 化为等式 $A^T y + w \leq c$ ，与拉格朗日函数对 $x$ 梯度为0的条件等价。
 
 3. **拉格朗日乘子非负**
+
    $$y \geq 0, \ w \geq 0$$
 
-4. **互补松弛条件**：
+5. **互补松弛条件**：
+
    $$y^T (Ax - (b - Bu)) = 0$$
    $$w^T x = 0$$
 
 #### 步骤4：将原问题内层替换为KKT条件，得到单层优化问题
+
 $$\max_{x,y,w,u} c^T x$$
+
 $$\begin{align*}
 \text{s.t. } & Ax \geq b - Bu \\
 & x \geq 0 \\
