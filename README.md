@@ -61,6 +61,7 @@ $$\begin{align*}
 
 #### 步骤5：互补松弛条件线性化（大M法）
 互补松弛条件包含两个变量的乘积（ $y^T x$ 与 $w^T x$ ），为非线性项，引入二元变量 $p_i, q_j \in \{0,1\}$ 与很大的常数 $M$ 线性化：
+
 $$\begin{cases}
 0 \leq y_i \leq M p_i \\
 0 \leq (Ax - (b - Bu))_i \leq M (1-p_i) \\
@@ -86,8 +87,10 @@ $$\begin{align*}
 ### 1.3 强对偶定理
 #### 步骤1：替换内层问题为对偶问题
 原始问题：
+
 $$\min_{x} c^T x \quad \text{s.t.} \quad Ax \geq b - Bu, \quad x \geq 0$$
 对偶问题：
+
 $$\max_{y} (b - Bu)^T y \quad \text{s.t.} \quad A^T y \leq c, \quad y \geq 0$$
 
 #### 步骤2：双层优化合并
@@ -107,9 +110,11 @@ $$(b - Bu)^T y = b^T y - u^T (B^T y)$$
 
 采用**变量分解**：
 $$u = \bar{u} + \delta u(z^+-z^-)$$
-即将不确定量$u$表示为名义值与偏差值，$\bar{u}$和$\delta u$均为常数，则：
+即将不确定量 $u$ 表示为名义值与偏差值， $\bar{u}$和$\delta u$ 均为常数，则：
+
 $$u^T v = \bar{u}^T v + \delta u^T v^+ - \delta u^T v^-$$
 最终目标函数为：
+
 $$\max_{y, v, z} b^T y - u^T v - \delta \bar{u}^T v^+ + \delta \bar{u}^T v^-$$
 
 **约束设计**：
@@ -152,8 +157,10 @@ $$\begin{align*}
 
 ### 标准模型
 通用的数学模型如下所示：
+
 $$\min_{y} c^{T}y + \max_{u \in \mathcal{U}} \min_{x \in F(y, u)} b^{T}x$$
 约束条件为：
+
 $$Ay \ge d \quad \text{(1)}$$
 $$Gx \ge h - Ey - Mu, \quad \forall u \in \mathcal{U} \quad \text{(2)}$$
 $$y \in S_{y} \subseteq \mathbb{R}_{+}^{n}, \quad x \in S_{x} \subseteq \mathbb{R}_{+}^{m}$$
