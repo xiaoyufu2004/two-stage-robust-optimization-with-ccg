@@ -121,13 +121,15 @@ $$\max_{y, v, z} b^T y - u^T v - \delta \bar{u}^T v^+ + \delta \bar{u}^T v^-$$
 - 大M法线性化：
   
 $v_j^+ = z_j^+ v_j$相当于：
+
 $$\begin{cases}
 0 \leq v_j^+ - v_j \leq M(1 - z_j^+) \\
 -M z_j^+ \leq v_j^+ \leq 0 
 \end{cases} \quad \forall j$$
-同理处理$v_j^- = z_j^- v_j$。
+同理处理 $v_j^- = z_j^- v_j$ 。
 
 - 逻辑约束：
+
 $$z_j^+ + z_j^- \leq 1 \quad (\text{二元变量互斥})$$
 $$ \sum_j (z_j^+ + z_j^-)\leq \Gamma \quad (\text{预算上限})$$
 
@@ -166,8 +168,8 @@ $$Gx \ge h - Ey - Mu, \quad \forall u \in \mathcal{U} \quad \text{(2)}$$
 $$y \in S_{y} \subseteq \mathbb{R}_{+}^{n}, \quad x \in S_{x} \subseteq \mathbb{R}_{+}^{m}$$
 
 其中：
-* $y$ 和 $x$ 分别是第一和第二阶段的决策变量。
-* $u$ 是不确定参数，其取值范围由不确定集 $\mathcal{U}$ 描述。
+*  $y$ 和 $x$ 分别是第一和第二阶段的决策变量。
+*  $u$ 是不确定参数，其取值范围由不确定集 $\mathcal{U}$ 描述。
 * 目标函数的第一部分 $c^Ty$ 是第一阶段成本，第二部分 $\max_{u \in \mathcal{U}} \min_{x \in F(y, u)} b^{T}x$ 是在最坏情况下的第二阶段成本。
 由于不确定集 $\mathcal{U}$ 通常包含大量甚至无穷多个场景，直接枚举求解是不可行的，因此需要设计专门的算法。
 
@@ -193,8 +195,10 @@ CCG算法则对子问题内层用**KKT条件**替代，将子问题转化为单�
 #### 1. 主问题 (Master Problem)
 
 主问题用于求解第一阶段变量 $y$ ，同时利用一个辅助变量 $\eta$ 来近似最坏情况下的第二阶段成本。在C&CG算法的第 $k$ 次迭代中，主问题 $MP_2$ 的形式如下：
+
 $$MP_2: \min_{y, \eta, \{x^l\}} c^{T}y + \eta$$
 约束条件为：
+
 $$Ay \ge d$$
 $$\eta \ge b^{T}x^l, \quad l=1,...,r$$
 $$Ey + Gx^l \ge h - Mu_l^*, \quad l=1,...,r$$
@@ -205,6 +209,7 @@ $$y \in S_y, \quad \eta \in \mathbb{R}, \quad x^l \in S_x, \quad l=1,...,r$$
 #### 2. 子问题 (Subproblem)
 
 子问题的目标是，对于主问题给出的一个固定的第一阶段解 $\bar{y}$ ，在不确定集 $\mathcal{U}$ 中找到一个能导致第二阶段成本最大的“最坏”场景 $u^*$ 。子问题 $SP_2$ 的形式是一个双层优化问题：
+
 $$SP_2: Q(\bar{y}) = \max_{u \in \mathcal{U}} \min_{x} \{ b^{T}x : Gx \ge h - E\bar{y} - Mu, x \in S_x \}$$
 这个双层结构是求解的难点。C&CG算法通过对内层的最小化问题进行对偶变换或使用KKT条件，将其转化为单层问题。
 
@@ -213,13 +218,17 @@ $$SP_2: Q(\bar{y}) = \max_{u \in \mathcal{U}} \min_{x} \{ b^{T}x : Gx \ge h - E\
 为了求解子问题 $SP_2$ ，我们可以利用其内层问题是一个线性规划的特性。假设强对偶性成立（例如，满足Slater's条件），我们可以用KKT（Karush-Kuhn-Tucker）条件来等价替换内层的最小化问题。
 
 对于给定的 $y$ 和 $u$ ，内层问题为：
+
 $$\min_{x} b^{T}x$$
 约束条件：
+
 $$h - Ey - Mu - Gx \le 0$$
 $$-x \le 0$$
 通过引入对偶变量 $\pi$ 和 $\lambda$ ，其KKT条件包括原始可行性、对偶可行性以及互补松弛条件。将这些KKT条件代入外层的最大化问题，子问题 $SP_2$ 就被转化为一个等价的单层优化问题：
+
 $$\max \quad b^{T}x$$
 约束条件：
+
 $$Gx \ge h - Ey - Mu \quad \text{(原始可行性)}$$
 $$G^{T}\pi \le b \quad \text{(对偶可行性)}$$
 $$(Gx - h + Ey + Mu)_i \cdot \pi_i = 0, \quad \forall i \quad \text{(互补松弛)}$$
@@ -265,24 +274,29 @@ $$(b - G^{T}\pi)_j \le M \cdot (1 - v_j)$$
 文档中以一个经典的选址-运输问题作为案例，来演示C&CG算法的应用。
 
 * **问题背景**：
-    * 第一阶段：决定仓库的建设与否 ($y_i$) 及其容量 ($z_i$)。
-    * 第二阶段：在需求明确后，安排从已建仓库到客户的运输方案 ($x_{ij}$) 。
+    * 第一阶段：决定仓库的建设与否 ( $y_i$ ) 及其容量 ( $z_i$ )。
+    * 第二阶段：在需求明确后，安排从已建仓库到客户的运输方案 ( $x_{ij}$ ) 。
     * 不确定性：客户的需求 $d_j$ 是不确定的，在一个预定义的多面体不确定集 $D$ 内波动。
 
 * **原问题模型**
 该问题的两阶段鲁棒优化模型如下：
+
 $$\min_{y,z} \sum_{i} f_i y_i + \sum_{i} c_i z_i + \max_{d \in D} \min_{x} \sum_{i,j} t_{ij} x_{ij}$$
 第一阶段约束包括：
+
 $$z_i \le K_i y_i, \quad \forall i$$
 第二阶段约束包括：
+
 $$\sum_{j} x_{ij} \le z_i, \quad \forall i$$
 $$\sum_{i} x_{ij} \ge d_j, \quad \forall j$$
 不确定集 $D$ 的定义为：
+
 $$D = \{d : d_j = \bar{d_j} + \xi_j g_j, \quad \sum g_j \le \Gamma, \dots \}$$
 
 * **主问题与子问题**
-- **主问题**：求解第一阶段变量 $y, z$ 和第二阶段成本的近似值 $\eta$。每次迭代，会根据子问题找到的最坏需求场景 $d^k$ 和对应的运输变量 $x^k$，添加新的列和约束。
-- **子问题**：对于给定的 $y, z$，找到最坏的需求 $d \in D$，使得第二阶段的运输成本最小化的值达到最大。
+- **主问题**：求解第一阶段变量 $y, z$ 和第二阶段成本的近似值 $\eta$ 。每次迭代，会根据子问题找到的最坏需求场景 $d^k$ 和对应的运输变量 $x^k$ ，添加新的列和约束。
+- **子问题**：对于给定的 $y, z$ ，找到最坏的需求 $d \in D$ ，使得第二阶段的运输成本最小化的值达到最大。
+
     $$
     \max_{d \in D} \min_{x \ge 0} \{\sum_{i,j} t_{ij} x_{ij} \mid \sum_{j} x_{ij} \le z_i, \sum_{i} x_{ij} \ge d_j \}
     $$
